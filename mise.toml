@@ -1,0 +1,3 @@
+[tools]
+maven = '3.9.9'
+java = 'zulu-21.40.17'
