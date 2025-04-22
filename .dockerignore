@@ -1,2 +1,3 @@
 *
-!/target/struts-cookbook.war
+!/entrypoint.sh
+!/target/extracted
