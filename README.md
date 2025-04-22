@@ -14,4 +14,4 @@ How to run
 
 - Open the following URL with your browser.
 
-http://localhost:8080/struts-cookbook/
+http://localhost:8080/

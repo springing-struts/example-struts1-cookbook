@@ -5,8 +5,8 @@ set -eu
 SCRIPT_DIR=$(realpath "$(dirname $BASH_SOURCE)")
 PROJECT_BASE_DIR=$(realpath "$SCRIPT_DIR/..")
 
-APP_NAME=cookbook
-CONTAINER_NAME=springing-struts1-$APP_NAME
+APP_NAME=struts-cookbook
+CONTAINER_NAME=springing-struts-$APP_NAME
 DOCKER=$( (command -v podman &> /dev/null) && echo podman || echo docker )
 
 main() {
@@ -14,12 +14,24 @@ main() {
 }
 
 build() {
-  mvn clean package -U
+  mvn \
+    clean \
+    dependency:purge-local-repository \
+      -DreResolve=false \
+      -DactTransitively=false \
+      -DmanualInclude='io.github.iwauo.springing-struts' \
+    package -U \
+    spring-boot:repackage \
+  && java \
+    -Djarmode=layertools \
+    -jar target/$APP_NAME-*.war \
+    extract --destination target/extracted
 }
 
 start() {
   $DOCKER build -t $CONTAINER_NAME . \
-  && $DOCKER rm -f $CONTAINER_NAME \
+  && ($DOCKER stop -t 0 $CONTAINER_NAME || true) \
+  && ($DOCKER rm -f $CONTAINER_NAME || true) \
   && $DOCKER run -d \
        -p 8080:8080 \
        -p 5005:5005 \
